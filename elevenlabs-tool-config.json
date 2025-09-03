@@ -1,0 +1,62 @@
+{
+  "type": "webhook",
+  "name": "tsb-lamp-report",
+  "description": "Nástroj na nahlasovanie porúch verejného osvetlenia v Bratislave. Vytvorí hlásenie pre technický tím s presnou lokalizáciou pokazenej lampy.",
+  "disable_interruptions": false,
+  "force_pre_tool_speech": "auto",
+  "assignments": [],
+  "api_schema": {
+    "url": "https://tsb-production.up.railway.app/api/lamps/report",
+    "method": "POST",
+    "path_params_schema": [],
+    "query_params_schema": [],
+    "request_body_schema": {
+      "id": "body",
+      "type": "object",
+      "description": "Nahlásenie poruchy verejného osvetlenia",
+      "properties": [
+        {
+          "id": "street",
+          "type": "string",
+          "value_type": "llm_prompt",
+          "description": "Názov ulice kde sa nachádza pokazená lampa (povinné, napr. 'Ružinovská', 'Lamačská')",
+          "dynamic_variable": "",
+          "constant_value": "",
+          "required": true
+        },
+        {
+          "id": "locationDescription",
+          "type": "string",
+          "value_type": "llm_prompt",
+          "description": "Presný popis polohy lampy (povinné, napr. 'pri dome číslo 45', 'na križovatke s Hlavnou', 'vedľa Tesca')",
+          "dynamic_variable": "",
+          "constant_value": "",
+          "required": true
+        },
+        {
+          "id": "issueDescription",
+          "type": "string",
+          "value_type": "llm_prompt",
+          "description": "Popis problému s lampou (povinné, napr. 'nesvietí', 'bliká', 'poškodený stĺp', 'spadnutá lampa')",
+          "dynamic_variable": "",
+          "constant_value": "",
+          "required": true
+        }
+      ],
+      "required": false,
+      "value_type": "llm_prompt"
+    },
+    "request_headers": [
+      {
+        "type": "value",
+        "name": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "auth_connection": null
+  },
+  "response_timeout_secs": 20,
+  "dynamic_variables": {
+    "dynamic_variable_placeholders": {}
+  }
+}

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { LampController } from '../controllers/lampController';
 import { HealthController } from '../controllers/healthController';
 import { ReportingController } from '../controllers/reportingController';
+import { TSBTestController } from '../controllers/tsbTestController';
 import { validateLampSearchRequest } from '../middleware/validation';
 import { validateReportRequest } from '../middleware/reportValidation';
 import { LampSearchService } from '../services/lampSearch';
@@ -23,6 +24,7 @@ export function createApiRouter(): Router {
   const lampController = new LampController(lampSearchService, cacheService);
   const healthController = new HealthController(cacheService);
   const reportingController = new ReportingController();
+  const tsbTestController = new TSBTestController();
   
   // Search endpoints (for information)
   router.post(
@@ -36,6 +38,13 @@ export function createApiRouter(): Router {
     '/lamps/report',
     validateReportRequest,
     reportingController.reportLampIssue.bind(reportingController)
+  );
+  
+  // TSB Form Testing (shows what data would be sent to TSB)
+  router.post(
+    '/tsb/test',
+    validateReportRequest,
+    tsbTestController.testTSBProcessing.bind(tsbTestController)
   );
   
   router.get(
