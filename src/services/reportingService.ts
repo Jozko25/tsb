@@ -129,7 +129,15 @@ Vráť JSON:
         max_tokens: 300,
       });
 
-      const result = JSON.parse(response.choices[0]?.message?.content || '{}');
+      const content = response.choices[0]?.message?.content || '{}';
+      
+      // Handle markdown-wrapped JSON responses from OpenAI
+      const cleanedContent = content
+        .replace(/^```json\s*/, '')
+        .replace(/\s*```$/, '')
+        .trim();
+      
+      const result = JSON.parse(cleanedContent);
       
       return {
         interpretedLocation: result.interpretedLocation || description,
