@@ -25,6 +25,7 @@ export interface LampSearchResponse {
     streetFields: string[];
     lampIdFields: string[];
   };
+  suggestedStreets?: string[];
 }
 
 export interface ArcGISField {

@@ -5,6 +5,7 @@ Production-ready Node.js REST service for searching public street lamps in Brati
 ## Features
 
 - **Field Discovery**: Automatic detection of street name and lamp identifier fields from ArcGIS metadata
+- **AI-Powered Street Matching**: Uses OpenAI to intelligently match misspelled or variant street names
 - **Case/Diacritics Handling**: Supports Slovak diacritics and common variants (e.g., "Ružinovská" and "Ruzinovska")
 - **Spatial Search**: Optional location-based filtering using coordinates and buffer zones
 - **Robust Querying**: Retry logic with exponential backoff for ArcGIS requests

@@ -1,25 +1,32 @@
 import { ArcGISFeature, FieldDiscovery, Lamp, LampSearchRequest } from '../types';
 import { FieldDiscoveryService } from './fieldDiscovery';
 import { ArcGISQueryService } from './arcgisQuery';
+import { StreetMatcherService } from './streetMatcher';
 import { removeDiacritics, normalizeStreet } from '../utils/diacritics';
 import { createBufferPolygon, transformCoordinates } from '../utils/geometry';
 import { config } from '../config/config';
 import { logger } from '../utils/logger';
 
 export class LampSearchService {
+  private streetMatcher: StreetMatcherService;
+
   constructor(
     private fieldDiscovery: FieldDiscoveryService,
     private arcgisQuery: ArcGISQueryService
-  ) {}
+  ) {
+    this.streetMatcher = new StreetMatcherService(arcgisQuery);
+  }
 
   async searchLamps(request: LampSearchRequest): Promise<{
     lamps: Lamp[];
     fieldDiscovery: FieldDiscovery;
+    suggestedStreets?: string[];
   }> {
     const fields = await this.fieldDiscovery.discoverFields();
     const normalizedStreet = normalizeStreet(request.street);
     
     let features: ArcGISFeature[] = [];
+    let suggestedStreets: string[] = [];
     
     if (request.lat !== undefined && request.lng !== undefined) {
       features = await this.searchWithSpatialFilter(
@@ -34,11 +41,32 @@ export class LampSearchService {
       features = await this.searchByStreetAttribute(normalizedStreet, fields);
     }
     
+    // If no results found, use AI to suggest better street names
+    if (features.length === 0) {
+      logger.info('No lamps found, trying AI street matching', { street: normalizedStreet });
+      suggestedStreets = await this.streetMatcher.findBestStreetMatch(normalizedStreet);
+      
+      // Try the AI suggestions
+      for (const suggestion of suggestedStreets.slice(0, 2)) {
+        const suggestionFeatures = await this.searchByStreetAttribute(suggestion, fields);
+        if (suggestionFeatures.length > 0) {
+          features = suggestionFeatures;
+          logger.info('Found lamps using AI suggestion', { 
+            original: normalizedStreet, 
+            suggestion, 
+            count: features.length 
+          });
+          break;
+        }
+      }
+    }
+    
     const lamps = this.transformFeaturesToLamps(features, fields);
     
     return {
       lamps,
       fieldDiscovery: fields,
+      ...(suggestedStreets.length > 0 && { suggestedStreets }),
     };
   }
 

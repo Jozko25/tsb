@@ -28,7 +28,7 @@ export class LampController {
       }
       
       const startTime = Date.now();
-      const { lamps, fieldDiscovery } = await this.lampSearchService.searchLamps({
+      const { lamps, fieldDiscovery, suggestedStreets } = await this.lampSearchService.searchLamps({
         street,
         lat,
         lng,
@@ -38,12 +38,17 @@ export class LampController {
         success: true,
         query: { street, lat, lng },
         count: lamps.length,
-        summary: `Found ${lamps.length} lamp${lamps.length !== 1 ? 's' : ''} on ${street}`,
+        summary: lamps.length > 0 
+          ? `Found ${lamps.length} lamp${lamps.length !== 1 ? 's' : ''} on ${street}`
+          : suggestedStreets && suggestedStreets.length > 0 
+            ? `No lamps found on "${street}". Try: ${suggestedStreets.slice(0, 2).join(', ')}`
+            : `No lamps found on "${street}"`,
         lamps,
         fieldDiscovery: {
           streetFields: fieldDiscovery.streetFields,
           lampIdFields: fieldDiscovery.lampIdFields,
         },
+        ...(suggestedStreets && suggestedStreets.length > 0 && { suggestedStreets }),
       };
       
       this.cacheService.set(cacheKey, response);
