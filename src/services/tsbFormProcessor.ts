@@ -2,7 +2,7 @@ import { TSBFormData, ProcessedTSBReport, TSBReportSubmission } from '../types/t
 import { LampSearchService } from './lampSearch';
 import { BratislavaStreetsService } from './bratislavaStreets';
 import { logger } from '../utils/logger';
-import axios from 'axios';
+// import axios from 'axios'; // Will be used later for TSB submission
 
 export class TSBFormProcessor {
   constructor(
@@ -57,7 +57,7 @@ export class TSBFormProcessor {
     }
   }
 
-  private identifySpecificLamp(lamps: any[], locationDescription: string): any {
+  private identifySpecificLamp(lamps: any[], _locationDescription: string): any {
     if (lamps.length === 0) return null;
     
     // If only one lamp, return it
@@ -117,7 +117,7 @@ export class TSBFormProcessor {
     };
   }
 
-  private prepareTSBSubmission(formData: TSBFormData, detectedLamp: any): TSBReportSubmission {
+  private prepareTSBSubmission(formData: TSBFormData, _detectedLamp: any): TSBReportSubmission {
     // This will be filled when you provide the actual network request format
     // For now, prepare the basic structure
     return {

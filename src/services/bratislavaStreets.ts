@@ -48,14 +48,14 @@ export class BratislavaStreetsService {
           // Remove duplicates by normalized name
           arr.findIndex(s => s.normalized === street.normalized) === index
         )
-        .sort((a, b) => a.name.localeCompare(b.name, 'sk'));
+        .sort((a: BratislavaStreet, b: BratislavaStreet) => a.name.localeCompare(b.name, 'sk'));
 
       this.streetsCache = streetNames;
       this.cacheTimestamp = now;
 
       logger.info('Cached Bratislava streets', { 
         count: streetNames.length,
-        sample: streetNames.slice(0, 5).map(s => s.name)
+        sample: streetNames.slice(0, 5).map((s: BratislavaStreet) => s.name)
       });
 
       return streetNames;
